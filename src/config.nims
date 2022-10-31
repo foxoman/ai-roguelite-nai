@@ -2,3 +2,4 @@
 --mm:orc
 --threadAnalysis:off
 --opt:speed
+--threads:off

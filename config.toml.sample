@@ -1,0 +1,41 @@
+# Port to run the main proxier on. If changing this, also change
+# Caddyfile
+port = 8080
+
+# Either "NovelAI" or "AutoWebUI"
+# WARNING! Using NovelAI image generation without having an Opus ($25 one)
+# subscription WILL BURN through your Anlas VERY FAST. 
+backend = "AutoWebUI"
+
+# How many steps the generation should run for, more = slower, but
+# maybe better results. NovelAI default is 28.
+steps = 20
+
+# Text to add to the start of the prompt
+prepend_prompt = ""
+# Text to add to the end of the prompt
+append_prompt = ""
+
+# Default negative prompt, applies for both backends.
+# If not present, the NovelAI backend uses its default, 
+# and no negative prompt is used for AutoWebUI.
+negative_prompt = ""
+
+# Default resolution (width/height) to generate images at.
+resolution = [512, 512]
+
+[NovelAI]
+token = "YOUR_TOKEN_HERE"
+# The model to use for generation.
+# Possible choices:
+# "safe-diffusion" for Curated,
+# "nai-diffusion" for Full,
+# "nai-diffusion-furry" for the Furry model.
+model = "nai-diffusion"
+
+[AutoWebUI]
+# How many images to try to batch together. More batches = more VRAM and (potentially) faster
+# Currently broken because of a bug in Auto's WebUI, don't set to more than 1
+batch_size = 1
+# What URL is the web ui running on
+host = "http://127.0.0.1:7860"

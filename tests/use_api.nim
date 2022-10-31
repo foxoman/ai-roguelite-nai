@@ -50,17 +50,22 @@ proc checkCompletion(taskId: string): string =
 
 
 let id = getTaskId()
+let id2 = getTaskId()
 echo id
 doWombo(id)
+doWombo(id2)
 
 var tries = 0
 var url = ""
+var url2 = ""
 
-while tries < 20 and url == "":
+while tries < 20 and url == "" and url2 == "":
   url = checkCompletion(id)
+  url2 = checkCompletion(id2)
   sleep(1000)
   inc tries
 
 let c = newHttpClient(sslContext = cont)
 c.downloadFile(url, "image.png")
+c.downloadFile(url2, "image2.png")
 c.close()

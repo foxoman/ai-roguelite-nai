@@ -1,5 +1,7 @@
 import std/[json, asyncdispatch, httpclient, strutils, random, base64, strformat]
 
+import ../config
+
 let payload = %*{
   "input": "",
   "model": "nai-diffusion",
@@ -19,13 +21,13 @@ let payload = %*{
 }
 
 let headers = {
-  "authorization": "Bearer " & readFile("nai_token"),
+  "authorization": fmt"Bearer {cfg.naiToken}",
   "content-type": "application/json",
 }.newHttpHeaders
 
 randomize()
 
-proc genImage*(prompt: string): Future[(bool, string, string)] {.async.} = 
+proc genImage*(prompt: string): Future[(bool, string)] {.async.} = 
   const url = "https://api.novelai.net/ai/generate-image"
   let c = newAsyncHttpClient()
   c.headers = headers
@@ -34,15 +36,22 @@ proc genImage*(prompt: string): Future[(bool, string, string)] {.async.} =
     cont: string
   
   var payload = payload
-  payload["input"] = %prompt
-  payload["parameters"]["steps"] = %20
-  let seed = rand(0'i32..high(int32)-1)
-  payload["parameters"]["seed"] = %seed
+  if cfg.uc.len > 0:
+    payload["parameters"]["uc"] = %cfg.uc
+  
+  payload["model"] = %cfg.naiModel
+  payload["input"] = fmt"{cfg.prepend}{prompt}{cfg.append}"
+
+  payload["parameters"]["width"] = %cfg.width
+  payload["parameters"]["height"] = %cfg.height
+  payload["parameters"]["steps"] = %cfg.steps
+
+  payload["parameters"]["seed"] = %rand(0'i32..high(int32)-1)
   try:
     resp = await c.post(url, $payload)
     cont = await resp.body
     if resp.code != Http201:
-      return (false, "couldn't generate!", "")
+      return (false, "")
   finally:
     c.close()
 
@@ -50,4 +59,4 @@ proc genImage*(prompt: string): Future[(bool, string, string)] {.async.} =
   for line in cont.splitLines():
     if line.startsWith("data:"):
       let imgBin = base64.decode(line[5..^1])
-      return (true, imgBin, &"Prompt: `{prompt}`\nSeed: `{seed}`")
+      return (true, imgBin)
