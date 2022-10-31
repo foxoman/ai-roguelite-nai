@@ -40,7 +40,7 @@ proc genImage*(prompt: string): Future[(bool, string)] {.async.} =
     payload["parameters"]["uc"] = %cfg.uc
   
   payload["model"] = %cfg.naiModel
-  payload["input"] = fmt"{cfg.prepend}{prompt}{cfg.append}"
+  payload["input"] = %fmt"{cfg.prepend}{prompt}{cfg.append}"
 
   payload["parameters"]["width"] = %cfg.width
   payload["parameters"]["height"] = %cfg.height
