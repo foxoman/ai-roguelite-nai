@@ -1,3 +1,7 @@
+*
+!*.*
 caddy_windows_amd64.exe
 *.exe
-nai_token
+*.png
+*.txt
+config.toml
