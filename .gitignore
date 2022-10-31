@@ -1,5 +1,6 @@
 *
 !*.*
+!LICENSE
 caddy_windows_amd64.exe
 *.exe
 *.png
